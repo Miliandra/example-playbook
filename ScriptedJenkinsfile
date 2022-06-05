@@ -1,0 +1,18 @@
+node("ansible_docker"){
+    stage("Git checkout"){
+        git credentialsId: 'Miliandra', url: 'https://github.com/Miliandra/example-playbook.git'
+    }
+    stage("Check ssh key"){
+        secret_check=true
+    }
+    stage("Run playbook"){
+        if (secret_check){
+            sh 'ansible-galaxy install -p $WORKSPACE -r requirements.yml'
+            sh 'ansible-playbook $WORKSPACE/site.yml -i $WORKSPACE/inventory/prod.yml'
+        }
+        else{
+            echo 'no more keys'
+        }
+        
+    }
+}
